@@ -810,7 +810,7 @@ elif page == "Prediction":
     st.title("Heart Disease Risk Prediction 🫀")
 
     st.caption(
-        "Enter the patient's information below to estimate the risk of heart disease using the trained Logistic Regression model."
+        "Enter the patient's information below to estimate the risk of heart disease using the trained Logistic Regression and Random Forest models."
     )
 
     st.markdown("---")
@@ -884,7 +884,7 @@ elif page == "Prediction":
 
     with c2:
      predict = st.button(
-        "🔍 Predict Risk",
+        "Predict Risk 🔍",
         use_container_width=True
     )    
     # ==================================================
@@ -921,38 +921,82 @@ elif page == "Prediction":
 
         # Scale Age
 
+    # Scale Age
+
         patient["Age"] = scaler.transform(patient[["Age"]])
-
-        prediction = lr.predict(patient)[0]
-
-        probability = lr.predict_proba(patient)[0]
-
-        confidence = max(probability) * 100
 
         st.markdown("---")
 
         # ==================================================
-        # RESULT
+        # RESULT TABS (Logistic Regression / Random Forest)
         # ==================================================
 
-        if prediction == 1:
+        pred_tab1, pred_tab2 = st.tabs(
+            ["Logistic Regression", "Random Forest"]
+        )
 
-            st.error(f"""
+        # -----------------------------
+        # Logistic Regression Result
+        # -----------------------------
+
+        with pred_tab1:
+
+            lr_prediction = lr.predict(patient)[0]
+
+            lr_probability = lr.predict_proba(patient)[0]
+
+            lr_confidence = max(lr_probability) * 100
+
+            if lr_prediction == 1:
+
+                st.error(f"""
 ## ❤️ High Risk
 
-The model predicts that the patient is at **High Risk** of heart disease.
+The Logistic Regression model predicts that the patient is at **High Risk** of heart disease.
 
-**Prediction Confidence:** {confidence:.1f}%
+**Prediction Confidence:** {lr_confidence:.1f}%
 """)
 
-        else:
+            else:
 
-            st.success(f"""
+                st.success(f"""
 ## 💚 Low Risk
 
-The model predicts that the patient is at **Low Risk** of heart disease.
+The Logistic Regression model predicts that the patient is at **Low Risk** of heart disease.
 
-**Prediction Confidence:** {confidence:.1f}%
+**Prediction Confidence:** {lr_confidence:.1f}%
+""")
+
+        # -----------------------------
+        # Random Forest Result
+        # -----------------------------
+
+        with pred_tab2:
+
+            rf_prediction = rf.predict(patient)[0]
+
+            rf_probability = rf.predict_proba(patient)[0]
+
+            rf_confidence = max(rf_probability) * 100
+
+            if rf_prediction == 1:
+
+                st.error(f"""
+## ❤️ High Risk
+
+The Random Forest model predicts that the patient is at **High Risk** of heart disease.
+
+**Prediction Confidence:** {rf_confidence:.1f}%
+""")
+
+            else:
+
+                st.success(f"""
+## 💚 Low Risk
+
+The Random Forest model predicts that the patient is at **Low Risk** of heart disease.
+
+**Prediction Confidence:** {rf_confidence:.1f}%
 """)
 
         st.markdown("---")
